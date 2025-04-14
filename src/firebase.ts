@@ -3,7 +3,7 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyA5OyMJwzsx9VHPLNN2s4AANvRaJIX2biw",
+    apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
     authDomain: "vaultviewer-ffc3d.firebaseapp.com",
     projectId: "vaultviewer-ffc3d",
     storageBucket: "vaultviewer-ffc3d.firebasestorage.app",
