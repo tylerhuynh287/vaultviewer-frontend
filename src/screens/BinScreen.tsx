@@ -83,7 +83,9 @@ const BinScreen = () => {
     }, []);
 
     const renderItem = ({ item }: { item: Bin }) => (
-        <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("Items", { binId: item.binId })}>
+        <TouchableOpacity 
+            style={styles.card} 
+            onPress={() => navigation.navigate("Items", { binId: item.binId })}>
             <Text style={styles.title}>{item.name}</Text>
             <Text style={styles.count}>ID: {item.binId}</Text>
         </TouchableOpacity>
