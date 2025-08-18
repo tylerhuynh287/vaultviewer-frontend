@@ -7,6 +7,7 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppNavigator";
 import { TextInput } from "react-native-gesture-handler";
 import { Button } from "react-native";
+import { api } from "../lib/api";
 
 interface Bin {
     binId: string;
@@ -24,24 +25,8 @@ const BinScreen = () => {
     const fetchBins = async () => {
         try {
             setLoading(true);
-
-            const user = auth.currentUser;
-            if (!user) throw new Error("User not authenticated");
-
-            const token = await user.getIdToken();
-
-            const response = await fetch ("http://localhost:5000/api/bins", {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error(`Error: ${response.status}`);
-            }
-
-            const data = await response.json();
-            setBins(data.bins);
+            const { bins } = await api.getBins();
+            setBins(bins || []);
         } catch (error: any) {
             console.error("Error fetching bins:", error);
             Alert.alert("Error", error.message || "Failed to load bins.");
@@ -54,22 +39,7 @@ const BinScreen = () => {
         if (!newBinName.trim()) return;
 
         try {
-            const user = auth.currentUser;
-            if (!user) throw new Error ("Not authenticated");
-
-            const token = await user.getIdToken();
-
-            const response = await fetch("http://localhost:5000/api/bins", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify({ name: newBinName }),
-            });
-
-            if (!response.ok) throw new Error("Failed to create bin");
-
+            await api.createBin(newBinName.trim());
             setNewBinName("");
             setShowModal(false);
             fetchBins();

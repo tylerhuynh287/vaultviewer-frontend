@@ -3,6 +3,7 @@ import { View, Text, FlatList, ActivityIndicator, StyleSheet, Alert, TouchableOp
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { auth } from "../firebase";
 import { RootStackParamList } from "../navigation/AppNavigator";
+import { api } from "../lib/api";
 
 type ItemScreenRouteProp = RouteProp<RootStackParamList, "Items">;
 
@@ -30,28 +31,14 @@ const ItemScreen = () => {
     useEffect(() => {
         const fetchItems = async () => {
             try {
-                const user = auth.currentUser;
-                if (!user) throw new Error("User not authenticated");
-
-                const token = await user.getIdToken();
-
-                const response = await fetch (`http://localhost:5000/api/items/${binId}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                if (!response.ok) throw new Error (`Error: ${response.status}`);
-
-                const data = await response.json();
-                setItems(data.items || []);
+                const { items } = await api.getItems(binId);
+                setItems(items || []);
             } catch (error: any) {
                 Alert.alert("Error loading items", error.message);
             } finally {
                 setLoading(false);
             }
         };
-
         fetchItems();
     }, [binId]);
 
@@ -72,29 +59,14 @@ const ItemScreen = () => {
         }
 
         try {
-            const user = auth.currentUser;
-            if(!user) throw new Error("User not authenticated");
-
-            const token = await user.getIdToken();
-
-            const response = await fetch(`http://localhost:5000/api/items/${binId}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    name,
-                    category,
-                    quantity: parseInt(quantity) || 0,
-                    notes, 
-                }),
+            await api.createItem(binId, {
+                name: name.trim(),
+                category: category || undefined,
+                quantity: parseInt(quantity || "0") || 0,
+                notes: notes || undefined,
             });
-
-            if (!response.ok) throw new Error(`Server Error: ${response.status}`);
-
-            const updated = await response.json();
-            setItems(updated.items || []);
+            const { items } = await api.getItems(binId);
+            setItems(items || []);
 
             setName('');
             setCategory('');
