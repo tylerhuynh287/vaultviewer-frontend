@@ -1,26 +1,30 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from "react-native";
-import { auth } from "../firebase";
-
+import React, { useEffect, useLayoutEffect, useState } from "react";
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, TextInput, Button, } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppNavigator";
-import { TextInput } from "react-native-gesture-handler";
-import { Button } from "react-native";
 import { api } from "../lib/api";
+import { useAuth } from "../context/AuthContext";
 
-interface Bin {
+type Bin = {
     binId: string;
     name: string;
-}
+};
 
-const BinScreen = () => {
+export default function BinScreen() {
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+    const { signOut } = useAuth();
+
     const [bins, setBins] = useState<Bin[]>([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [newBinName, setNewBinName] = useState("");
-    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => <Button title="Sign out" onPress={signOut} />,
+        });
+    }, [navigation, signOut]);
 
     const fetchBins = async () => {
         try {
@@ -37,7 +41,6 @@ const BinScreen = () => {
 
     const handleCreateBin = async () => {
         if (!newBinName.trim()) return;
-
         try {
             await api.createBin(newBinName.trim());
             setNewBinName("");
@@ -55,7 +58,8 @@ const BinScreen = () => {
     const renderItem = ({ item }: { item: Bin }) => (
         <TouchableOpacity 
             style={styles.card} 
-            onPress={() => navigation.navigate("Items", { binId: item.binId })}>
+            onPress={() => navigation.navigate("Items", { binId: item.binId })}
+        >
             <Text style={styles.title}>{item.name}</Text>
             <Text style={styles.count}>ID: {item.binId}</Text>
         </TouchableOpacity>
@@ -84,10 +88,7 @@ const BinScreen = () => {
 
                 <TouchableOpacity
                     style={styles.addButton}
-                    onPress={() => {
-                        console.log("Pressed + Bin");
-                        setShowModal(true);
-                    }}
+                    onPress={() => setShowModal(true)}
                 >
                     <Text style={styles.addButtonText}>+ Bin</Text>
                 </TouchableOpacity>
@@ -105,7 +106,7 @@ const BinScreen = () => {
             </View>
         </>
     );
-};
+}
 
 const styles = StyleSheet.create({
     container: { flex: 1, padding: 16, backgroundColor: "#fff" },
@@ -157,7 +158,7 @@ const styles = StyleSheet.create({
         color: "#fff",
         fontWeight: "bold",
         fontSize: 16,
-    }
+    },
 });
 
-export default BinScreen;
+

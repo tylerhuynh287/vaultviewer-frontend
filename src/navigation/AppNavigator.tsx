@@ -1,5 +1,4 @@
 import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "../screens/LoginScreen";
 import BinScreen from "../screens/BinScreen";
@@ -11,27 +10,25 @@ export type RootStackParamList = {
     Items: { binId: string };
 };
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const Public = createNativeStackNavigator<RootStackParamList>();
+export const PublicStack = () => (
+    <Public.Navigator>
+        <Public.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+        />
+    </Public.Navigator>
+);
 
-export default function AppNavigator() {
-    return (
-        <NavigationContainer>
-            <Stack.Navigator initialRouteName="Login">
-                <Stack.Screen 
-                    name="Login" 
-                    component={LoginScreen} 
-                    options={{ headerShown: false }} 
-                />
-                <Stack.Screen
-                    name="Bins"
-                    component={BinScreen}
-                    options={{ title: "My Bins" }}
-                />
-                <Stack.Screen
-                    name="Items"
-                    component={ItemScreen}
-                />
-            </Stack.Navigator>
-        </NavigationContainer>
-    );
-}
+const Private = createNativeStackNavigator<RootStackParamList>();
+export const PrivateStack = () => (
+    <Private.Navigator>
+        <Private.Screen
+            name="Bins"
+            component={BinScreen}
+            options={{ title: "My Bins" }}
+        />
+        <Private.Screen name="Items" component={ItemScreen} />
+    </Private.Navigator>
+);
