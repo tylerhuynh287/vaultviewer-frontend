@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, ActivityIndicator, StyleSheet, Alert, TouchableOpacity, Modal, TextInput, Button } from "react-native";
 import { RouteProp, useRoute } from "@react-navigation/native";
-import { auth } from "../firebase";
 import { RootStackParamList } from "../navigation/AppNavigator";
 import { api } from "../lib/api";
 
@@ -62,7 +61,7 @@ const ItemScreen = () => {
             await api.createItem(binId, {
                 name: name.trim(),
                 category: category || undefined,
-                quantity: parseInt(quantity || "0") || 0,
+                quantity: quantity ? parseInt(quantity) || 0 : undefined,
                 notes: notes || undefined,
             });
             const { items } = await api.getItems(binId);

@@ -19,7 +19,7 @@ A React Native (Expo CLI) frontend for the VaultViewer app – a QR-coded digita
 
 ## Developer Notes
 - This frontend uses `http://localhost:5000` for development purposes and is not configured for production.
-- Firebase API keys are handled securely through `.env` using `EXPO_PUBLIC_` variables.
+- Firebase settings come from `.env` using `EXPO_PUBLIC_` variables. These are built into the app and are public, so never put secrets in them.
 - API calls expect a valid ID token from Firebase Auth.
 
 ## Status

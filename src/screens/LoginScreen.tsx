@@ -3,31 +3,17 @@ import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 
-import { useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../navigation/AppNavigator";
-
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
   const handleLogin = async () => {
     try {
         setLoading(true);
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const token = await userCredential.user.getIdToken();
-
-        console.log("Login successful");
-        console.log("User logged in:", userCredential.user.email);
-        console.log("Token:", token);
-
-        navigation.navigate("Bins");
-        
+        // App.tsx switches to the bins screen when the auth state changes
+        await signInWithEmailAndPassword(auth, email, password);
     } catch (error: any) {
-        console.log("Login error:", error);
         Alert.alert("Login Failed", error.message);
     } finally {
         setLoading(false);
